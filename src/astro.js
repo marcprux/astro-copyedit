@@ -3,8 +3,8 @@ import { decodeHTML } from 'entities';
 import MagicString from 'magic-string';
 import { EditError } from './errors.js';
 
-const excluded = new Set(['head', 'script', 'style', 'pre', 'code', 'textarea', 'select', 'option', 'svg', 'math', 'button', 'title']);
-const containers = new Set(['a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'caption', 'cite', 'dd', 'del', 'details', 'dfn', 'div', 'dt', 'em', 'figcaption', 'figure', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'label', 'li', 'main', 'mark', 'nav', 'p', 'q', 's', 'section', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'td', 'th', 'time', 'u']);
+const excluded = new Set(['head', 'script', 'style', 'pre', 'textarea', 'select', 'option', 'svg', 'math', 'button', 'title']);
+const containers = new Set(['a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'caption', 'cite', 'code', 'dd', 'del', 'details', 'dfn', 'div', 'dt', 'em', 'figcaption', 'figure', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'label', 'li', 'main', 'mark', 'nav', 'p', 'q', 's', 'section', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'td', 'th', 'time', 'u']);
 function attributeName(attribute) {
   const name = attribute.name;
   return name?.type === 'JSXNamespacedName' ? `${name.namespace.name}:${name.name.name}` : name?.name;
@@ -89,7 +89,7 @@ export function copyeditAstro(sources) {
           const mapping = register(node);
           if (!mapping) continue;
           const label = mapping.source.replace(/[&"<>]/g, char => ({ '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' })[char]);
-          output.appendLeft(node.start, `<span data-copyedit-id="${mapping.id}" data-copyedit-source="${label}" data-copyedit-format="astro">`);
+          output.appendLeft(node.start, `<span data-copyedit-id="${mapping.id}" data-copyedit-source="${label}" data-copyedit-format="astro" data-copyedit-raw="${mapping.raw}">`);
           output.appendLeft(node.end, '</span>');
         }
         if (!output.hasChanged()) return;

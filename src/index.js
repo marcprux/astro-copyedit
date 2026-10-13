@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { rm } from 'node:fs/promises';
 import { isUnifiedProcessor, unified } from '@astrojs/markdown-remark';
+import { parseShortcut } from './shortcut.js';
 import { Sources } from './source.js';
+import { copyeditFences } from './fences.js';
 import { copyeditRehype } from './rehype.js';
 import { copyeditAstro } from './astro.js';
 import { saveMiddleware } from './server.js';
@@ -22,6 +24,8 @@ export default function copyedit(options = {}) {
       'astro:config:setup': ({ command, config, updateConfig, addDevToolbarApp }) => {
         if (command !== 'dev') return;
         enabled = true;
+        let shortcut;
+        try { shortcut = parseShortcut(options.shortcut); } catch { throw new Error(str.shortcutInvalid(locale)); }
         endpoint = `${config.base.replace(/\/$/, '')}/__copyedit__/save`;
         const root = fileURLToPath(config.root);
         sources = new Sources({
@@ -38,6 +42,7 @@ export default function copyedit(options = {}) {
           cacheDir,
           markdown: { processor: unified({
             ...processor.options,
+            remarkPlugins: [...processor.options.remarkPlugins, copyeditFences(sources)],
             // A serializable option invalidates the content-layer digest on
             // restart. URL cache paths alone serialize as {} in Astro's digest.
             rehypePlugins: [...processor.options.rehypePlugins, [copyeditRehype(sources), { session }]],
@@ -46,7 +51,7 @@ export default function copyedit(options = {}) {
             name: 'astro-copyedit:client-config',
             resolveId(id) { if (id === 'virtual:astro-copyedit/config') return '\0virtual:astro-copyedit/config'; },
             load(id) {
-              if (id === '\0virtual:astro-copyedit/config') return `export default ${JSON.stringify({ endpoint, token, locale: options.locale ?? null })};`;
+              if (id === '\0virtual:astro-copyedit/config') return `export default ${JSON.stringify({ endpoint, token, locale: options.locale ?? null, shortcut })};`;
             },
           }] },
         });

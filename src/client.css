@@ -27,3 +27,16 @@ button:disabled { opacity: .55; cursor: default; }
 @media (forced-colors: active) {
   .editor { background: Canvas; color: CanvasText; border-color: CanvasText; backdrop-filter: none; }
 }
+
+.editor.expanded { width: min(720px, calc(100vw - 24px)); max-height: calc(100dvh - 100px); overflow: auto; }
+.retry { margin-left: auto; background: rgb(52 56 65 / 85%); color: #fff; }
+.source-panel { margin: 10px 0; }
+.scope-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
+select { font: inherit; max-width: 100%; border: 1px solid #626671; border-radius: 4px; padding: 4px 8px; color: inherit; background: #24262e; }
+.raw-source { display: block; width: 100%; min-height: 150px; height: min(32vh, 300px); resize: vertical; padding: 10px; border: 1px solid #626671; border-radius: 6px; background: rgb(10 12 18 / 85%); color: #f4f4f6; font: 13px/1.6 ui-monospace, monospace; tab-size: 2; }
+.raw-source:focus-visible, select:focus-visible, .spellcheck input:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.source-hint { margin: 6px 0 0; font-size: 11px; color: #c7c9d1; }
+@media (max-width: 400px) { .actions { flex-wrap: wrap; } }
+
+.spellcheck { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+.spellcheck input { margin: 0; accent-color: #a78bfa; }

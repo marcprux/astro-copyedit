@@ -25,7 +25,7 @@ test('Astro source spans preserve frontmatter, inline markup, CRLF, Unicode, and
   await f.sources.save(id, 'typo');
   assert.equal(await readFile(f.path, 'utf8'), original.replace('tpyo', 'typo'));
 });
-test('Astro excludes expressions, code, attributes, raw HTML, hydrated subtrees, entities, and ignored content', () => {
+test('Astro excludes expressions, pre blocks, attributes, raw HTML, hydrated subtrees, entities, and ignored content', () => {
   const source = '<p title="attribute">allowed {value}</p><script>const a="script";</script><style>p{color:red}</style><pre>code</pre><svg><text>vector</text></svg><p data-copyedit-ignore>ignored</p><p is:raw>raw</p><Widget client:load><p>hydrated</p></Widget><p>&amp;</p><p>{[1].map(x => <b>expression</b>)}</p>';
   assert.deepEqual(astroTextLeaves(source).map(n => n.value), ['allowed ']);
 });
@@ -53,4 +53,12 @@ test('Astro rejects transformed inputs and virtual submodules; retains untouched
   assert.equal(await readFile(f.path, 'utf8'), '<p>First line\nwith a typo.</p>');
   assert.equal(await f.sources.prepareAstro(f.path, '<p>transformed</p>'), null);
   assert.equal(await copyeditAstro(f.sources).transform.handler('ignored', `${f.path}?astro&type=style`), undefined);
+});
+
+test('Astro inline code and CRLF selections map to literal HTML source', async t => {
+  const f = await fixture(t, '<p>First\r\nsecond <code>value</code>.</p>');
+  const [id] = [...f.sources.records][0];
+  const result = await f.sources.source(id, undefined, 0, { start: 6, end: 12 });
+  assert.equal(result.text.replace(/\r\n/g, '\n').slice(result.selection.start, result.selection.end), 'second');
+  assert([...f.sources.records.values()].some(r => r.text === 'value'));
 });

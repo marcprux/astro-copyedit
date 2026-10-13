@@ -18,7 +18,7 @@ An aside can contain a **mistakke** too.
 | Browser editing | Availabble locally |
 
 ```js title="An example"
-const message = "Code is read-only";
+const message = "Edit this code example";
 ```
 
 The page title comes from frontmatter and stays read-only. Search, navigation, and the table of contents belong to Starlight.

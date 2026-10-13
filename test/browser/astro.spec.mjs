@@ -1,3 +1,4 @@
+import { replaceInSource, selectForEditing } from './helpers.mjs';
 import { test, expect } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
 const path = new URL('../../.test-sites/demo/src/components/PracticeArticle.astro', import.meta.url);
@@ -18,8 +19,8 @@ test('Astro template edits preserve markup and scoped styles across a reload', a
   const word = page.locator('strong [data-copyedit-id]').first();
   const before = await word.evaluate(node => getComputedStyle(node.parentElement).fontWeight);
   const previous = await word.textContent();
-  await word.click();
-  await word.fill('corrected');
+  await selectForEditing(page, word);
+  await replaceInSource(page, await word.textContent(), 'corrected');
   await page.getByRole('button', { name: 'Save to Astro', exact: true }).click();
   await expect.poll(() => readFile(path, 'utf8')).toBe(original.replace(`<strong>${previous}</strong>`, '<strong>corrected</strong>'));
   await expect(page.locator('strong [data-copyedit-id]').first()).toHaveText('corrected');
@@ -32,10 +33,10 @@ test('Astro expressions and opt-outs stay read-only, cancel and stale checks pro
   await expect(page.locator('pre [data-copyedit-id], [data-copyedit-ignore] [data-copyedit-id]')).toHaveCount(0);
   await expect(page.locator('p').filter({ hasText: 'This sentence comes from an expression' }).locator('[data-copyedit-id]')).toHaveCount(0);
   const word = page.locator('strong [data-copyedit-id]').first();
-  await word.click(); await word.fill('draft');
+  await selectForEditing(page, word); await replaceInSource(page, await word.textContent(), 'draft');
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   expect(await readFile(path, 'utf8')).toBe(original);
-  await word.click(); await word.fill('unsaved');
+  await selectForEditing(page, word); await replaceInSource(page, await word.textContent(), 'unsaved');
   const external = original + '\n<!-- External synthetic test change -->\n';
   await writeFile(path, external);
   await expect(page.getByRole('status')).toContainText('changed while you were editing');

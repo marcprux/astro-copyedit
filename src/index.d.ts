@@ -5,5 +5,9 @@ export interface CopyeditOptions {
   roots?: string[];
   /** Editor language. Defaults to the browser language, then English. */
   locale?: 'en' | 'es';
+  /** Toggle the editor. Default: 'Mod+Shift+E' (Cmd on macOS, Ctrl elsewhere).
+   * Chords accept Mod/Ctrl/Meta/Alt/Shift + a letter, digit, or F1–F12.
+   * Set false to disable the shortcut. */
+  shortcut?: string | false;
 }
 export default function copyedit(options?: CopyeditOptions): AstroIntegration;

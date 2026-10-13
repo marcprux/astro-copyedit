@@ -7,11 +7,11 @@ description: Practice copyediting a real Markdown document.
 
 Good writing gets better when you read it in the place it will live. A line feels different on a page than it does in a text editor. Here, you can make the small corrections without leaving the page.
 
-## Start with one extra letter
+## Start with one word
 
 This is my **misspelled** string.
 
-Turn on Copyedit and click the bold word. Remove the extra letter, then save. The original Markdown keeps its double asterisks, and your preview shows the corrected word.
+Select the bold word, then open Copyedit. The corresponding word is selected in the source editor. Make a correction and save; the Markdown keeps its double asterisks, and your preview shows the updated word.
 
 ## A few more things to try
 
@@ -27,14 +27,14 @@ Turn on Copyedit and click the bold word. Remove the extra letter, then save. Th
 | Table cells | Make this sentance a little better. |
 | Unicode | Café, naïve, 日本語, and 🌿 belong here too. |
 
-## Some things stay in the source editor
+## Code and punctuation in the source editor
 
-Inline code such as `const spelling = "intentional"` is not editable. Neither are code fences:
+Select inline code such as `const spelling = "intentional"` together with the surrounding sentence to edit the whole paragraph. Fenced code also opens in the source editor:
 
 ```js
 const message = "Read me, but keep me as code.";
 ```
 
-Smart punctuation such as "curly quotes", and decoded entities such as tea &amp; coffee, are deliberately read-only in this first version. Their rendered characters differ from their source spelling.
+Smart punctuation such as "curly quotes", and decoded entities such as tea &amp; coffee, can be edited here too. The source editor preserves their original Markdown spelling and selects the corresponding source characters.
 
 **A final little nudge:** read your correction once more, then carry on.

@@ -1,6 +1,6 @@
-const excluded = new Set(['pre', 'code', 'script', 'style', 'textarea', 'select', 'option', 'svg', 'math', 'button']);
+const excluded = new Set(['pre', 'script', 'style', 'textarea', 'select', 'option', 'svg', 'math', 'button']);
 
-/** Instrument final, unchanged Markdown text leaves; never infer transformed ranges. */
+/** Instrument final text using verified Markdown leaves and known transformations. */
 export function copyeditRehype(sources) {
   return function plugin() {
     return async (tree, file) => {
@@ -19,9 +19,12 @@ export function copyeditRehype(sources) {
             const mapping = register(node);
             if (mapping) return {
               type: 'element', tagName: 'span',
-              properties: { 'data-copyedit-id': mapping.id, 'data-copyedit-source': mapping.source, 'data-copyedit-format': format },
+              properties: { 'data-copyedit-id': mapping.id, 'data-copyedit-source': mapping.source, 'data-copyedit-format': format, 'data-copyedit-raw': String(mapping.raw) },
               children: [node],
             };
+          } else if (node.type === 'element' && node.tagName === 'code' && node.children?.every(child => child.type === 'text') && node.properties?.dataCopyeditIgnore === undefined && node.properties?.['data-copyedit-ignore'] === undefined) {
+            const mapping = register({ position: node.position, value: node.children.map(child => child.value).join('') });
+            if (mapping) node.properties = { ...node.properties, 'data-copyedit-id': mapping.id, 'data-copyedit-source': mapping.source, 'data-copyedit-format': format, 'data-copyedit-raw': String(mapping.raw) };
           } else visit(node);
           return node;
         });

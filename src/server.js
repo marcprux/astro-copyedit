@@ -34,8 +34,17 @@ export function saveMiddleware({ endpoint, token, sources, afterSave = async () 
       }
       let payload;
       try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new EditError('badRequest'); }
-      if (!payload || typeof payload.id !== 'string' || !/^[a-f0-9]{32}$/.test(payload.id) || typeof payload.text !== 'string') throw new EditError('badRequest');
-      const result = await sources.save(payload.id, payload.text);
+      if (!payload || typeof payload !== 'object') throw new EditError('badRequest');
+      const { operation = 'save', mode = 'text', scope = 0 } = payload;
+      const validId = id => typeof id === 'string' && /^[a-f0-9]{32}$/.test(id);
+      if (!['save', 'source', 'selection'].includes(operation) || !['text', 'source'].includes(mode) || !Number.isInteger(scope) || scope < 0) throw new EditError('badRequest');
+      if (operation === 'selection') {
+        if (!Array.isArray(payload.ids) || !payload.ids.length || payload.ids.length > 256 || !payload.ids.every(validId)) throw new EditError('badRequest');
+        return reply(200, await sources.selection(payload.ids, payload.selection));
+      }
+      if (!validId(payload.id) || (operation === 'save' ? typeof payload.text !== 'string' : payload.text !== undefined && typeof payload.text !== 'string')) throw new EditError('badRequest');
+      if (operation === 'source') return reply(200, await sources.source(payload.id, payload.text, scope, payload.selection));
+      const result = await sources.save(payload.id, payload.text, mode, scope);
       await afterSave(result);
       reply(200, { saved: true });
     } catch (error) {

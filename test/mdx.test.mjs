@@ -40,10 +40,11 @@ test('MDX JSX child text is editable and duplicate passages remain independent',
   await f.sources.save(ids[1], 'different');
   assert.equal(await readFile(f.path, 'utf8'), '<Aside title="same"><strong>same</strong> and <strong>different</strong></Aside>');
 });
-test('MDX excludes JavaScript, code, attributes, ignored and hydrated subtrees', async t => {
+test('MDX excludes JavaScript, raw pre blocks, attributes, ignored and hydrated subtrees', async t => {
   const source = 'export const label = "generated";\n\n{label}\n\n<Box title="attribute" />\n\n<div data-copyedit-ignore>ignored</div>\n\n<Widget client:load><p>hydrated</p></Widget>\n\n<pre><code>code</code></pre>\n\n<svg><text>vector</text></svg>\n\n`inline`\n\n```js\nconst a = 1;\n```\n';
   const f = await fixture(t, source);
-  assert.equal(f.sources.records.size, 0);
+  assert.equal(f.sources.records.size, 1);
+  assert(f.idFor('inline'));
 });
 test('MDX insertion escapes executable syntax instead of introducing components or expressions', async t => {
   const f = await fixture(t, '**word**\n\nexport const keep = 42;\n');
@@ -54,7 +55,7 @@ test('MDX insertion escapes executable syntax instead of introducing components 
   assert(source.endsWith('\n\nexport const keep = 42;\n'));
   const code = await f.render();
   assert.doesNotMatch(code, /_createMdxContent.*danger\(\)/);
-  assert.equal(f.idFor(replacement), undefined, 'Escaped source is conservatively read-only after saving');
+  assert(f.idFor(replacement), 'Escaped prose remains editable through the source editor');
 });
 test('MDX stale edits and attempts to remove structure cannot overwrite source', async t => {
   const f = await fixture(t, '<Aside>**word**</Aside>');
@@ -76,4 +77,12 @@ test('MDX rejects generated text with copied positions and supports table cells'
   assert.equal(f.idFor('generated'), undefined);
   await f.sources.save(f.idFor('Café 🌿 tpyo'), 'Café 🌿 typo');
   assert.equal(await readFile(f.path, 'utf8'), 'Original prose.\n\n| Heading |\n| --- |\n| Café 🌿 typo |\n');
+});
+
+test('literal inline HTML code in MDX participates in a complete paragraph source selection', async t => {
+  const f = await fixture(t, 'Use <code>literal</code> and `markdown` together.');
+  assert(f.idFor('literal'));
+  assert(f.idFor('markdown'));
+  const result = await f.sources.selection([...f.sources.records.keys()]);
+  assert.equal(result.text, 'Use <code>literal</code> and `markdown` together.');
 });

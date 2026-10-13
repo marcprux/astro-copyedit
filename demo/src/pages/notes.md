@@ -18,3 +18,14 @@ The best edit is often a quiet one: a clearer phrase, a missing letter, a word t
 3. Save your correction.
 
 Your source file remains the source of truth.
+
+## Formatting across a paragraph
+
+This is _some_ **bold** text and a [link](https://example.org) that I can edit in a single run.
+
+## An editable code example
+
+```js title="example.js"
+const message = "Edit this example";
+console.log(message);
+```

@@ -62,7 +62,7 @@ test('stale edits and simultaneous saves cannot overwrite a newer revision', asy
   await assert.rejects(f.sources.save(first, 'overwrite'), { code: 'conflict' });
   assert.equal(await readFile(f.path, 'utf8'), '**external edit**');
 });
-test('code, transformed typography, entities, and ambiguous plugin positions are read-only', async t => {
+test('inline code and known typography are mapped; generated text with copied positions is rejected', async t => {
   function splitWithoutPositions() {
     return tree => {
       const paragraph = tree.children.find(n => n.type === 'element' && n.tagName === 'p');
@@ -71,8 +71,11 @@ test('code, transformed typography, entities, and ambiguous plugin positions are
     };
   }
   const f = await fixture(t, 'original text\n\n`code`\n\n```js\nconst code = 1;\n```\n\n"quotes" &amp; more', [splitWithoutPositions]);
-  assert.equal(f.sources.records.size, 0);
-  assert.doesNotMatch(f.html, /data-copyedit-id/);
+  assert.equal(f.sources.records.size, 2);
+  assert.equal(f.idFor('generated'), undefined);
+  assert(f.idFor('code'));
+  assert(f.idFor('“quotes” & more'));
+  assert.match(f.html, /<code data-copyedit-id=/);
 });
 test('Unicode and table cell edits retain the existing structure', async t => {
   const f = await fixture(t, '| Heading |\n| --- |\n| Café 🌿 tpyo |\n');
@@ -134,4 +137,45 @@ test('page routes mask frontmatter without changing its original bytes', async t
   const mapping = register({ value: 'tpyo', position: { start: { offset: start }, end: { offset: start + 4 } } });
   await f.sources.save(mapping.id, 'typo');
   assert.equal(await readFile(f.path, 'utf8'), original.replace('tpyo', 'typo'));
+});
+
+test('source selections preserve exact punctuation, entities, escapes, Unicode and CRLF offsets', async t => {
+  const body = 'Before 🌿 "quote" &amp; \\*literal\\*...\r\nsecond same same.';
+  const f = await fixture(t, body);
+  const [id, record] = [...f.sources.records][0];
+  const rendered = record.text;
+  for (const [word, expected] of [['“quote”', '"quote"'], ['&', '&amp;'], ['…', '...'], ['🌿', '🌿'], ['*literal*', '\\*literal\\*'], ['same', 'same']]) {
+    const start = rendered.lastIndexOf(word);
+    const result = await f.sources.source(id, undefined, 0, { start, end: start + word.length });
+    const normalized = result.text.replace(/\r\n/g, '\n');
+    assert.equal(normalized.slice(result.selection.start, result.selection.end), expected);
+    if (word === 'same') assert.equal(result.selection.start, normalized.lastIndexOf('same'));
+  }
+  await assert.rejects(f.sources.source(id, undefined, 0, { start: -1, end: 2 }), { code: 'badRequest' });
+  await assert.rejects(f.sources.source(id, undefined, 0, { start: 2, end: 1 }), { code: 'badRequest' });
+  await assert.rejects(f.sources.source(id, undefined, 0, { start: 0, end: 10000 }), { code: 'badRequest' });
+});
+test('select across inline code and typography, then save the whole verified Markdown paragraph', async t => {
+  const original = 'Before.\n\nUse `` a `tick` `` and "quotes" &amp; **bold**.\n\nAfter.';
+  const f = await fixture(t, original);
+  const ids = [...f.sources.records].filter(([, r]) => r.start >= original.indexOf('Use') && r.end <= original.indexOf('\n\nAfter')).map(([id]) => id);
+  const result = await f.sources.selection(ids, { start: 1, end: 1 });
+  assert.equal(result.text, 'Use `` a `tick` `` and "quotes" &amp; **bold**.');
+  assert.equal(result.text.slice(result.selection.start, result.selection.end), result.text.slice(1));
+  const code = f.idFor('a `tick`');
+  const selected = await f.sources.source(code, undefined, 0, { start: 3, end: 7 });
+  assert.equal(selected.text.slice(selected.selection.start, selected.selection.end), 'tick');
+  await f.sources.save(result.id, result.text.replace('tick', 'word').replace('quotes', 'quotation'), 'source');
+  assert.equal(await readFile(f.path, 'utf8'), original.replace('tick', 'word').replace('quotes', 'quotation'));
+});
+
+test('scope expansion retains the selected characters', async t => {
+  const f = await fixture(t, '- First **same**.\n- Second same.');
+  const id = f.idFor('same');
+  const block = await f.sources.source(id);
+  for (let scope = 0; scope < block.scopes.length; scope++) {
+    const result = await f.sources.source(id, undefined, scope, { start: 0, end: 4 });
+    assert.equal(result.text.slice(result.selection.start, result.selection.end), 'same');
+    assert.equal(result.selection.start, result.text.indexOf('**same**') + 2);
+  }
 });
