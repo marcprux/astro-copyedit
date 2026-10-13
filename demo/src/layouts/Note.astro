@@ -1,0 +1,11 @@
+---
+import Shell from './Shell.astro';
+import { str } from '../../../src/generated/strings.js';
+const { frontmatter } = Astro.props;
+---
+<Shell title={frontmatter.title}>
+  <div class="note-wrap">
+    <a class="plain-link" href="/">← {str.demoBack()}</a>
+    <article class="paper prose note"><slot /></article>
+  </div>
+</Shell>

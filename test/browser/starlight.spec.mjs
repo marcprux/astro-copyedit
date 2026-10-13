@@ -1,0 +1,36 @@
+import { test, expect } from '@playwright/test';
+import { readFile, writeFile } from 'node:fs/promises';
+const path = new URL('../../.test-sites/starlight/src/content/docs/index.md', import.meta.url);
+let original;
+test.beforeAll(async () => { original = await readFile(path, 'utf8'); });
+test.afterEach(async ({ page }) => { await page.close(); await writeFile(path, original); });
+async function open(page) {
+  await page.goto('http://127.0.0.1:4324/');
+  await page.waitForLoadState('networkidle');
+  await page.locator('astro-dev-toolbar #dev-bar').focus();
+  await page.locator('astro-dev-toolbar button[data-app-id="astro-copyedit"]').click();
+}
+test('standard Starlight Markdown saves with title, navigation, asides, and code intact', async ({ page }) => {
+  await open(page);
+  const word = page.locator('.sl-markdown-content strong [data-copyedit-id]').filter({ hasText: /^tpyo$/ });
+  await word.click(); await word.fill('typo');
+  await page.getByRole('button', { name: 'Save to Markdown', exact: true }).click();
+  await expect.poll(() => readFile(path, 'utf8')).toBe(original.replace('**tpyo**', '**typo**'));
+  await expect(page.locator('.sl-markdown-content strong [data-copyedit-id]').filter({ hasText: /^typo$/ })).toBeVisible();
+  await expect(page.locator('#_top')).toHaveText('Editing documentation');
+  await expect(page.locator('#_top [data-copyedit-id], nav [data-copyedit-id], pre [data-copyedit-id]')).toHaveCount(0);
+  await expect(page.locator('.starlight-aside')).toContainText('mistakke');
+  await expect(page.locator('.expressive-code')).toContainText('Code is read-only');
+});
+test('Starlight heading saves refresh the heading link and table of contents; MDX remains unchanged', async ({ page }) => {
+  await open(page);
+  const heading = page.locator('.sl-markdown-content h2 [data-copyedit-id]').filter({ hasText: 'A heading to improve' });
+  await heading.click(); await heading.fill('A corrected heading');
+  await page.keyboard.press('Control+Enter');
+  await expect.poll(() => readFile(path, 'utf8')).toBe(original.replace('A heading to improve', 'A corrected heading'));
+  await expect(page.locator('.sl-markdown-content #a-corrected-heading')).toBeVisible();
+  await expect(page.locator('starlight-toc a[href="#a-corrected-heading"]').first()).toBeVisible();
+  await page.goto('http://127.0.0.1:4324/components/');
+  await expect(page.locator('.sl-markdown-content')).toContainText('This MDX content renders normally');
+  await expect(page.locator('[data-copyedit-id]')).toHaveCount(0);
+});

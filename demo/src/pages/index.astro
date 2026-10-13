@@ -1,0 +1,44 @@
+---
+import { getEntry, render } from 'astro:content';
+import Shell from '../layouts/Shell.astro';
+import { str } from '../../../src/generated/strings.js';
+const entry = await getEntry('articles', 'playground');
+const { Content } = await render(entry!);
+---
+<Shell>
+  <section class="hero">
+    <p class="eyebrow">{str.demoEyebrow()}</p>
+    <h1>{str.demoHeading()}</h1>
+    <p class="intro">{str.demoIntro()}</p>
+    {import.meta.env.DEV && <button class="start" id="show-practice">{str.demoStart()} <span aria-hidden="true">↗</span></button>}
+    <p class="hero-note">{str.demoNote()}</p>
+    <div class="margin-mark" aria-hidden="true">¶</div>
+  </section>
+  <div class="workspace">
+    <aside class="guide">
+      <p class="eyebrow">{str.demoGuideTitle()}</p>
+      <ol>
+        <li><strong>{str.demoStepOneTitle()}</strong><p>{str.demoStepOne()}</p></li>
+        <li><strong>{str.demoStepTwoTitle()}</strong><p>{str.demoStepTwo()}</p></li>
+        <li><strong>{str.demoStepThreeTitle()}</strong><p>{str.demoStepThree()}</p></li>
+      </ol>
+      <a class="plain-link" href="/notes/">{str.demoPlain()} <span aria-hidden="true">→</span></a>
+      {import.meta.env.DEV && <label class="locale-label">{str.demoLocale()}
+        <select id="editor-locale"><option value="en">{str.languageEnglish()}</option><option value="es">{str.languageSpanish()}</option></select>
+      </label>}
+    </aside>
+    <section class="paper" id="practice">
+      <div class="paper-header"><span>{str.demoArticle()}</span><span aria-hidden="true">01 / 02</span></div>
+      <article class="prose"><Content /></article>
+      <div class="paper-footer">{str.demoSource()}</div>
+    </section>
+  </div>
+</Shell>
+<script>
+  document.querySelector('#show-practice')?.addEventListener('click', () => {
+    document.querySelector('.paper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.querySelector('#editor-locale')?.addEventListener('change', event => {
+    window.dispatchEvent(new CustomEvent('astro-copyedit:locale', { detail: { locale: (event.target as HTMLSelectElement).value } }));
+  });
+</script>

@@ -1,0 +1,16 @@
+---
+import Shell from '../layouts/Shell.astro';
+import PracticeArticle from '../components/PracticeArticle.astro';
+import { str } from '../../../src/generated/strings.js';
+---
+<Shell title={str.demoAstroTitle()}>
+  <section class="hero">
+    <p class="eyebrow">{str.demoEyebrow()}</p>
+    <h1>{str.demoAstroTitle()}</h1>
+    <p class="intro">{str.demoAstroIntro()}</p>
+  </section>
+  <section class="paper">
+    <PracticeArticle />
+    <div class="paper-footer">{str.demoAstroSource()}</div>
+  </section>
+</Shell>

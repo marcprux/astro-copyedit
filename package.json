@@ -1,0 +1,89 @@
+{
+  "name": "astro-copyedit",
+  "version": "0.1.0",
+  "description": "Edit Markdown and Astro template text directly in your local Astro preview.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Marc Prud'hommeaux",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcprux/astro-copyedit.git"
+  },
+  "homepage": "https://github.com/marcprux/astro-copyedit#readme",
+  "bugs": {
+    "url": "https://github.com/marcprux/astro-copyedit/issues"
+  },
+  "keywords": [
+    "astro-integration",
+    "astro",
+    "markdown",
+    "editing",
+    "dev-toolbar",
+    "starlight",
+    "copyediting"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./client": "./src/client.js",
+    "./toolbar": "./src/toolbar.js"
+  },
+  "files": [
+    "src",
+    "locales",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate-locales.mjs",
+    "check:generated": "node scripts/generate-locales.mjs --check",
+    "test": "npm run check:generated && node --test test/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:integration": "node test/lifecycle.mjs",
+    "dev": "cd demo && astro dev --host 127.0.0.1",
+    "dev:stop": "cd demo && astro dev stop",
+    "dev:status": "cd demo && astro dev status",
+    "dev:logs": "cd demo && astro dev logs",
+    "build": "cd demo && astro build",
+    "check:build": "node scripts/check-build.mjs",
+    "preview": "cd demo && astro preview --host 127.0.0.1 --port 4322",
+    "prepack": "npm run check:generated && npm run lint && npm test",
+    "lint": "eslint .",
+    "check:package": "publint",
+    "dev:starlight": "cd examples/starlight && astro dev --host 127.0.0.1 --port 4325",
+    "build:starlight": "cd examples/starlight && astro build",
+    "validate": "npm run lint && npm test && npm run test:browser && npm run test:integration && npm run build && npm run build:starlight && npm run check:build && npm run check:package"
+  },
+  "peerDependencies": {
+    "astro": "^7.2.3"
+  },
+  "dependencies": {
+    "@astrojs/compiler-rs": "^0.5.1",
+    "@astrojs/markdown-remark": "^7.2.3",
+    "entities": "^8.1.0",
+    "magic-string": "^1.4.3",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.42.6",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.58.0",
+    "astro": "^7.2.3",
+    "eslint": "^10.12.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "globals": "^17.13.0",
+    "publint": "^0.3.25",
+    "@typescript-eslint/parser": "^8.71.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./src/index.d.ts"
+}

@@ -1,0 +1,20 @@
+---
+// Editable publication content, separate from the localized demo interface.
+const computed = 'This sentence comes from an expression and stays read-only.';
+---
+<article class="prose">
+  <h1>A little room for better words</h1>
+  <p>This page is written in an Astro template. A small <strong>tpyo</strong> is waiting for your correction.</p>
+  <h2>Keep the shape of the sentence</h2>
+  <p>Edit an <em>itallic</em> word or a <a href="https://docs.astro.build/">helpfull link</a>. The surrounding tags and link destination stay in place.</p>
+  <p>These repeated words have separate sources: <strong>repeat</strong> and <strong>repeat</strong>.</p>
+  <p>Unicode belongs here too: Café, 日本語, and 🌿.</p>
+  <h2>Some words belong in the source editor</h2>
+  <p>{computed}</p>
+  <p data-copyedit-ignore>This publication passage explicitly opts out of browser editing.</p>
+  <pre><code>const message = "code remains code";</code></pre>
+</article>
+
+<style>
+  strong { font-weight: 750; }
+</style>

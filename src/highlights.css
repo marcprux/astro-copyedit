@@ -1,0 +1,18 @@
+html[data-copyedit-mode] [data-copyedit-id] {
+  outline: 1px dashed color-mix(in srgb, #13866f 42%, transparent);
+  outline-offset: 3px;
+  border-radius: 2px;
+  cursor: text;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+html[data-copyedit-mode] [data-copyedit-id]:hover,
+html[data-copyedit-mode] [data-copyedit-id]:focus {
+  background: color-mix(in srgb, #3bca9b 14%, transparent);
+  outline: 2px solid #13866f;
+}
+html[data-copyedit-mode] [data-copyedit-active] {
+  background: color-mix(in srgb, #3bca9b 18%, transparent);
+  outline: 2px solid #13866f;
+  caret-color: #13866f;
+}

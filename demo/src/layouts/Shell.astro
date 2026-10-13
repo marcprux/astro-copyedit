@@ -1,0 +1,25 @@
+---
+import { str } from '../../../src/generated/strings.js';
+import '../styles.css';
+const { title = str.demoTitle() } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={str.demoDescription()} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header" data-copyedit-ignore>
+      <a class="wordmark" href="/"><span class="brand-mark" aria-hidden="true">↗</span>{str.name()}<span class="version">0.1</span></a>
+      <a class="source-link" href="https://github.com/marcprux/astro-copyedit">{str.demoGithub()} <span aria-hidden="true">↗</span></a>
+    </header>
+    <main>
+      <nav class="demo-tabs" aria-label={str.name()}><a href="/">{str.demoMarkdown()}</a><a href="/astro/">{str.demoAstro()}</a></nav>
+      <slot />
+    </main>
+    <footer data-copyedit-ignore><span>{str.demoFooter()}</span><span>{str.name()} · Astro</span></footer>
+  </body>
+</html>
