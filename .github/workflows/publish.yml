@@ -1,0 +1,57 @@
+name: Publish to npm
+on:
+  release:
+    # Includes promotion of a GitHub prerelease to a full release.
+    types: [released]
+permissions:
+  contents: read
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+jobs:
+  check-version:
+    if: ${{ !github.event.release.prerelease && !github.event.release.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: node scripts/check-release.mjs --stable
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+  validate:
+    needs: check-version
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install an OIDC-capable npm CLI
+        run: npm install --global npm@11
+      - run: npm ci
+      - run: node scripts/check-release.mjs --stable
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+      - name: Publish the validated tagged source
+        # npm trusted publishing supplies short-lived credentials and provenance.
+        # Configure marcprux/astro-copyedit + publish.yml in the npm package settings.
+        run: npm publish --access public --tag latest

@@ -7,7 +7,7 @@
   "editing": "Editing {source}",
   "editLabel": "Edit text from {source}",
   "shortcut": "⌘/Ctrl + Enter to save · Escape to cancel",
-  "scope": "Only highlighted Markdown and Astro template text is editable. Formatting, code, and generated text stay protected.",
+  "scope": "Only highlighted Markdown, MDX, and Astro template text is editable. Formatting, code, and generated text stay protected.",
   "conflict": "This file changed since the page was rendered. Cancel and refresh before trying again. Your edit has not been saved.",
   "unknownId": "This preview is out of date. Cancel and refresh to load a new source mapping.",
   "invalidText": "Keep this edit within one line and preserve the surrounding source structure.",
@@ -21,10 +21,10 @@
   "unsupportedProcessor": "Copyedit requires the Unified Markdown processor. Configure markdown.processor with unified() from @astrojs/markdown-remark.",
   "serverReady": "Copyedit is available in the local preview.",
   "demoTitle": "Copyedit — a little room for better words",
-  "demoDescription": "A live Markdown and Astro text editing playground for Astro Copyedit.",
+  "demoDescription": "A live Markdown, MDX, and Astro text editing playground for Astro Copyedit.",
   "demoEyebrow": "ASTRO INTEGRATION · LOCAL FIRST",
   "demoHeading": "The page is your editor.",
-  "demoIntro": "Spot a typo. Fix it where you found it. Copyedit carries your changes back to the original Markdown or Astro file.",
+  "demoIntro": "Spot a typo. Fix it where you found it. Copyedit carries your changes back to the original Markdown, MDX, or Astro file.",
   "demoStart": "Explore the practice page",
   "demoNote": "A real source file. A real save. No CMS required.",
   "demoArticle": "THE PRACTICE PAGE",
@@ -49,5 +49,7 @@
   "demoAstroTitle": "An Astro page, ready to edit",
   "demoAstroIntro": "This article is publication content written directly in an .astro template. Open Copyedit in the toolbar and select a highlighted passage. Expressions, attributes, and code stay read-only.",
   "demoAstroSource": "Source: src/components/PracticeArticle.astro",
-  "starlightTitle": "Copyedit documentation"
+  "starlightTitle": "Copyedit documentation",
+  "saveMdx": "Save to MDX",
+  "demoMdx": "Try an MDX page"
 }

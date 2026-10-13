@@ -1,7 +1,7 @@
 {
   "name": "astro-copyedit",
   "version": "0.1.0",
-  "description": "Edit Markdown and Astro template text directly in your local Astro preview.",
+  "description": "Edit Markdown, MDX, and Astro template text directly in your local Astro preview.",
   "type": "module",
   "license": "MIT",
   "author": "Marc Prud'hommeaux",
@@ -20,7 +20,8 @@
     "editing",
     "dev-toolbar",
     "starlight",
-    "copyediting"
+    "copyediting",
+    "mdx"
   ],
   "engines": {
     "node": ">=22.12.0"
@@ -68,19 +69,22 @@
     "entities": "^8.1.0",
     "magic-string": "^1.4.3",
     "remark-gfm": "^4.0.1",
+    "remark-mdx": "^3.1.1",
     "remark-parse": "^11.0.0",
     "unified": "^11.0.5"
   },
   "devDependencies": {
+    "@astrojs/mdx": "^8.0.3",
     "@astrojs/starlight": "^0.42.6",
     "@eslint/js": "^10.0.1",
+    "@mdx-js/mdx": "^3.1.1",
     "@playwright/test": "^1.58.0",
+    "@typescript-eslint/parser": "^8.71.2",
     "astro": "^7.2.3",
     "eslint": "^10.12.0",
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.13.0",
-    "publint": "^0.3.25",
-    "@typescript-eslint/parser": "^8.71.2"
+    "publint": "^0.3.25"
   },
   "publishConfig": {
     "access": "public"

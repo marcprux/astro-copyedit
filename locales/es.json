@@ -7,7 +7,7 @@
   "editing": "Editando {source}",
   "editLabel": "Editar texto de {source}",
   "shortcut": "⌘/Ctrl + Intro para guardar · Escape para cancelar",
-  "scope": "Solo se puede editar el texto resaltado de Markdown y de plantillas Astro. El formato, el código y el texto generado están protegidos.",
+  "scope": "Solo se puede editar el texto resaltado de Markdown, MDX y plantillas Astro. El formato, el código y el texto generado están protegidos.",
   "conflict": "El archivo cambió desde que se mostró la página. Cancela y actualiza antes de volver a intentarlo. Tu cambio no se ha guardado.",
   "unknownId": "Esta vista previa está desactualizada. Cancela y actualiza para cargar una nueva referencia al archivo.",
   "invalidText": "Mantén el cambio dentro de una línea y conserva la estructura del archivo.",
@@ -21,10 +21,10 @@
   "unsupportedProcessor": "Copyedit requiere el procesador Markdown Unified. Configura markdown.processor con unified() de @astrojs/markdown-remark.",
   "serverReady": "Copyedit está disponible en la vista previa local.",
   "demoTitle": "Copyedit — un espacio para mejorar las palabras",
-  "demoDescription": "Un espacio para editar texto de Markdown y Astro en vivo con Copyedit.",
+  "demoDescription": "Un espacio para editar texto de Markdown, MDX y Astro en vivo con Copyedit.",
   "demoEyebrow": "INTEGRACIÓN ASTRO · LOCAL",
   "demoHeading": "La página es tu editor.",
-  "demoIntro": "Encuentra una errata. Corrígela donde la viste. Copyedit lleva tus cambios al archivo Markdown o Astro original.",
+  "demoIntro": "Encuentra una errata. Corrígela donde la viste. Copyedit lleva tus cambios al archivo Markdown, MDX o Astro original.",
   "demoStart": "Explora la página de práctica",
   "demoNote": "Un archivo real. Un cambio guardado. Sin necesidad de CMS.",
   "demoArticle": "LA PÁGINA DE PRÁCTICA",
@@ -49,5 +49,7 @@
   "demoAstroTitle": "Una página Astro lista para editar",
   "demoAstroIntro": "Este artículo es contenido escrito directamente en una plantilla .astro. Abre Copyedit en la barra y selecciona un fragmento resaltado. Las expresiones, los atributos y el código no se pueden editar.",
   "demoAstroSource": "Archivo: src/components/PracticeArticle.astro",
-  "starlightTitle": "Documentación de Copyedit"
+  "starlightTitle": "Documentación de Copyedit",
+  "saveMdx": "Guardar en MDX",
+  "demoMdx": "Probar una página MDX"
 }

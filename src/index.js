@@ -56,7 +56,25 @@ export default function copyedit(options = {}) {
         if (!enabled) return;
         server = devServer;
         server.middlewares.use(saveMiddleware({ endpoint, token, sources, afterSave: async ({ changed, path }) => {
-          if (changed && path.endsWith('.md') && refreshContent) await refreshContent({ loaders: ['glob-loader', 'starlight-docs-loader'] });
+          if (!changed) return;
+          // A browser reload can beat the file watcher after an atomic save.
+          // Invalidate both Vite's transforms and Astro's evaluated SSR modules
+          // before acknowledging the save, including modules importing this file.
+          for (const environment of Object.values(server.environments)) {
+            const invalidated = new Set();
+            for (const module of environment.moduleGraph.getModulesByFile(path.replaceAll('\\', '/')) ?? []) {
+              environment.moduleGraph.invalidateModule(module, invalidated);
+            }
+            if ('runner' in environment) {
+              for (const module of invalidated) {
+                const evaluated = environment.runner.evaluatedModules.getModuleById(module.id);
+                if (evaluated) environment.runner.evaluatedModules.invalidateModule(evaluated);
+              }
+            } else if (environment.name !== 'client' && invalidated.size) {
+              environment.hot.send({ type: 'full-reload', path: '*', triggeredBy: path });
+            }
+          }
+          if (/\.mdx?$/i.test(path) && refreshContent) await refreshContent({ loaders: ['glob-loader', 'starlight-docs-loader'] });
         } }));
         logger.info(str.serverReady(locale));
       },

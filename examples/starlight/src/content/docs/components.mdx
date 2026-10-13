@@ -1,7 +1,25 @@
 ---
-title: MDX remains read-only
+title: Editing MDX documentation
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-<Aside>This MDX content renders normally alongside editable Markdown.</Aside>
+<Aside>This MDX content can be edited alongside Markdown.</Aside>
+
+## Copyedit and components
+
+This paragraph has a **tpyo** in a regular Markdown text run.
+
+<Aside title="The title attribute stays read-only">
+  Literal component children have a **mistakke** you can correct too.
+</Aside>
+
+export const generated = 'An expression supplies this sentence.';
+
+{generated}
+
+<div data-copyedit-ignore>This passage opts out.</div>
+
+```js
+const label = "read-only code";
+```

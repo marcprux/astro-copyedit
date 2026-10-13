@@ -27,7 +27,7 @@ function setStatus(code, error = false) {
 function updateLabels() {
   if (!editor) return;
   editor.setAttribute('aria-label', str.name(locale));
-  saveButton.textContent = saving ? str.saving(locale) : active?.node.dataset.copyeditFormat === 'astro' ? str.saveAstro(locale) : str.save(locale);
+  saveButton.textContent = saving ? str.saving(locale) : active?.node.dataset.copyeditFormat === 'astro' ? str.saveAstro(locale) : active?.node.dataset.copyeditFormat === 'mdx' ? str.saveMdx(locale) : str.save(locale);
   cancelButton.textContent = str.cancel(locale);
   shortcut.textContent = str.shortcut(locale);
   if (active) sourceLabel.textContent = str.editing(locale, { source: active.node.dataset.copyeditSource });

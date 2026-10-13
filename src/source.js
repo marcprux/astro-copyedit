@@ -4,6 +4,7 @@ import { dirname, extname, isAbsolute, relative, resolve, join } from 'node:path
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
+import remarkMdx from 'remark-mdx';
 import { parseFrontmatter } from '@astrojs/markdown-remark';
 
 import { EditError } from './errors.js';
@@ -11,18 +12,23 @@ import { astroTextLeaves, patchAstroText } from './astro.js';
 export { EditError } from './errors.js';
 
 const parser = unified().use(remarkParse).use(remarkGfm);
+const mdxParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
+const parserFor = format => format === 'mdx' ? mdxParser : parser;
 const digest = value => createHash('sha256').update(value).digest('hex');
 const inside = (root, path) => {
   const rel = relative(root, path);
   return rel === '' || (!rel.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`) && rel !== '..' && !isAbsolute(rel));
 };
 function walk(node, visit) { visit(node); node.children?.forEach(child => walk(child, visit)); }
+// MDX stores a derived JavaScript AST with absolute offsets in data.estree.
+// Its source value is compared verbatim on the enclosing MDX node instead.
 function comparable(tree) {
-  return JSON.stringify(tree, (key, value) => key === 'position' ? undefined : value);
+  return JSON.stringify(tree, (key, value) => key === 'position' || key === 'estree' ? undefined : value);
 }
 
 /** Change only the differing characters, escaping inserted Markdown punctuation. */
-export function patchText(body, start, end, text) {
+export function patchText(body, start, end, text, format = 'md') {
+  const parser = parserFor(format);
   if (typeof text !== 'string' || !text.isWellFormed() || [...text].some(char => { const code = char.charCodeAt(0); return code < 9 || (code > 10 && code < 32) || code === 127; })) throw new EditError('invalidText');
   if (text.length > 16_384) throw new EditError('tooLarge', 413);
   const old = body.slice(start, end);
@@ -60,7 +66,7 @@ export class Sources {
   async canonical(path) {
     const target = await realpath(path);
     const roots = await Promise.all(this.roots.map(root => realpath(root).catch(() => resolve(root))));
-    if (!['.md', '.astro'].includes(extname(target).toLowerCase()) || !roots.some(root => inside(root, target))) throw new EditError('outsideRoot', 403);
+    if (!['.md', '.mdx', '.astro'].includes(extname(target).toLowerCase()) || !roots.some(root => inside(root, target))) throw new EditError('outsideRoot', 403);
     return target;
   }
   snapshot(target, source) {
@@ -99,7 +105,8 @@ export class Sources {
     let target;
     try { target = await this.canonical(path); } catch { return null; }
     const source = await readFile(target, 'utf8');
-    if (extname(target).toLowerCase() !== '.md') return null;
+    const format = extname(target).toLowerCase().slice(1);
+    if (!['md', 'mdx'].includes(format)) return null;
     // Collection loaders may trim the parsed body; page routes may retain its
     // whitespace. Match only these known transformations, never a text search.
     const content = parseFrontmatter(source).content;
@@ -114,7 +121,7 @@ export class Sources {
     const snapshot = this.snapshot(target, source);
     const revision = snapshot.revision;
     const leaves = new Map();
-    walk(parser.parse(body), node => {
+    walk(parserFor(format).parse(body), node => {
       if (node.type === 'text' && node.position) leaves.set(`${node.position.start.offset}:${node.position.end.offset}`, node.value);
     });
     this.onSource(path, target);
@@ -129,7 +136,7 @@ export class Sources {
       if (!id) {
         id = randomBytes(16).toString('hex');
         snapshot.ids.set(recordKey, id);
-        this.records.set(id, { target, path, revision, bodyStart, body, start, end, text: node.value });
+        this.records.set(id, { target, path, revision, bodyStart, body, start, end, text: node.value, format });
       }
       const line = source.slice(0, absoluteStart).split('\n').length;
       return { id, source: `${relative(this.root, path).split('\\').join('/')}:${line}` };
@@ -151,7 +158,7 @@ export class Sources {
     const start = record.bodyStart + record.start;
     const end = record.bodyStart + record.end;
     if (source.slice(start, end) !== record.text) throw new EditError('conflict', 409);
-    const body = (record.format === 'astro' ? patchAstroText : patchText)(record.body, record.start, record.end, text);
+    const body = (record.format === 'astro' ? patchAstroText : patchText)(record.body, record.start, record.end, text, record.format);
     const replacement = body.slice(record.start, body.length - (record.body.length - record.end));
     const next = source.slice(0, start) + replacement + source.slice(end);
     if (next === source) return { path: record.path, changed: false };

@@ -9,7 +9,7 @@ const messages = {
     "editing": "Editing {source}",
     "editLabel": "Edit text from {source}",
     "shortcut": "⌘/Ctrl + Enter to save · Escape to cancel",
-    "scope": "Only highlighted Markdown and Astro template text is editable. Formatting, code, and generated text stay protected.",
+    "scope": "Only highlighted Markdown, MDX, and Astro template text is editable. Formatting, code, and generated text stay protected.",
     "conflict": "This file changed since the page was rendered. Cancel and refresh before trying again. Your edit has not been saved.",
     "unknownId": "This preview is out of date. Cancel and refresh to load a new source mapping.",
     "invalidText": "Keep this edit within one line and preserve the surrounding source structure.",
@@ -23,10 +23,10 @@ const messages = {
     "unsupportedProcessor": "Copyedit requires the Unified Markdown processor. Configure markdown.processor with unified() from @astrojs/markdown-remark.",
     "serverReady": "Copyedit is available in the local preview.",
     "demoTitle": "Copyedit — a little room for better words",
-    "demoDescription": "A live Markdown and Astro text editing playground for Astro Copyedit.",
+    "demoDescription": "A live Markdown, MDX, and Astro text editing playground for Astro Copyedit.",
     "demoEyebrow": "ASTRO INTEGRATION · LOCAL FIRST",
     "demoHeading": "The page is your editor.",
-    "demoIntro": "Spot a typo. Fix it where you found it. Copyedit carries your changes back to the original Markdown or Astro file.",
+    "demoIntro": "Spot a typo. Fix it where you found it. Copyedit carries your changes back to the original Markdown, MDX, or Astro file.",
     "demoStart": "Explore the practice page",
     "demoNote": "A real source file. A real save. No CMS required.",
     "demoArticle": "THE PRACTICE PAGE",
@@ -51,7 +51,9 @@ const messages = {
     "demoAstroTitle": "An Astro page, ready to edit",
     "demoAstroIntro": "This article is publication content written directly in an .astro template. Open Copyedit in the toolbar and select a highlighted passage. Expressions, attributes, and code stay read-only.",
     "demoAstroSource": "Source: src/components/PracticeArticle.astro",
-    "starlightTitle": "Copyedit documentation"
+    "starlightTitle": "Copyedit documentation",
+    "saveMdx": "Save to MDX",
+    "demoMdx": "Try an MDX page"
   },
   "es": {
     "name": "Copyedit",
@@ -62,7 +64,7 @@ const messages = {
     "editing": "Editando {source}",
     "editLabel": "Editar texto de {source}",
     "shortcut": "⌘/Ctrl + Intro para guardar · Escape para cancelar",
-    "scope": "Solo se puede editar el texto resaltado de Markdown y de plantillas Astro. El formato, el código y el texto generado están protegidos.",
+    "scope": "Solo se puede editar el texto resaltado de Markdown, MDX y plantillas Astro. El formato, el código y el texto generado están protegidos.",
     "conflict": "El archivo cambió desde que se mostró la página. Cancela y actualiza antes de volver a intentarlo. Tu cambio no se ha guardado.",
     "unknownId": "Esta vista previa está desactualizada. Cancela y actualiza para cargar una nueva referencia al archivo.",
     "invalidText": "Mantén el cambio dentro de una línea y conserva la estructura del archivo.",
@@ -76,10 +78,10 @@ const messages = {
     "unsupportedProcessor": "Copyedit requiere el procesador Markdown Unified. Configura markdown.processor con unified() de @astrojs/markdown-remark.",
     "serverReady": "Copyedit está disponible en la vista previa local.",
     "demoTitle": "Copyedit — un espacio para mejorar las palabras",
-    "demoDescription": "Un espacio para editar texto de Markdown y Astro en vivo con Copyedit.",
+    "demoDescription": "Un espacio para editar texto de Markdown, MDX y Astro en vivo con Copyedit.",
     "demoEyebrow": "INTEGRACIÓN ASTRO · LOCAL",
     "demoHeading": "La página es tu editor.",
-    "demoIntro": "Encuentra una errata. Corrígela donde la viste. Copyedit lleva tus cambios al archivo Markdown o Astro original.",
+    "demoIntro": "Encuentra una errata. Corrígela donde la viste. Copyedit lleva tus cambios al archivo Markdown, MDX o Astro original.",
     "demoStart": "Explora la página de práctica",
     "demoNote": "Un archivo real. Un cambio guardado. Sin necesidad de CMS.",
     "demoArticle": "LA PÁGINA DE PRÁCTICA",
@@ -104,7 +106,9 @@ const messages = {
     "demoAstroTitle": "Una página Astro lista para editar",
     "demoAstroIntro": "Este artículo es contenido escrito directamente en una plantilla .astro. Abre Copyedit en la barra y selecciona un fragmento resaltado. Las expresiones, los atributos y el código no se pueden editar.",
     "demoAstroSource": "Archivo: src/components/PracticeArticle.astro",
-    "starlightTitle": "Documentación de Copyedit"
+    "starlightTitle": "Documentación de Copyedit",
+    "saveMdx": "Guardar en MDX",
+    "demoMdx": "Probar una página MDX"
   }
 };
 export const supportedLocales = Object.freeze(Object.keys(messages));
@@ -134,6 +138,7 @@ export const str = Object.freeze({
   demoIntro: (locale = 'en', args = {}) => format('demoIntro', locale, args),
   demoLocale: (locale = 'en', args = {}) => format('demoLocale', locale, args),
   demoMarkdown: (locale = 'en', args = {}) => format('demoMarkdown', locale, args),
+  demoMdx: (locale = 'en', args = {}) => format('demoMdx', locale, args),
   demoNote: (locale = 'en', args = {}) => format('demoNote', locale, args),
   demoPlain: (locale = 'en', args = {}) => format('demoPlain', locale, args),
   demoSource: (locale = 'en', args = {}) => format('demoSource', locale, args),
@@ -157,6 +162,7 @@ export const str = Object.freeze({
   outsideRoot: (locale = 'en', args = {}) => format('outsideRoot', locale, args),
   save: (locale = 'en', args = {}) => format('save', locale, args),
   saveAstro: (locale = 'en', args = {}) => format('saveAstro', locale, args),
+  saveMdx: (locale = 'en', args = {}) => format('saveMdx', locale, args),
   saved: (locale = 'en', args = {}) => format('saved', locale, args),
   saving: (locale = 'en', args = {}) => format('saving', locale, args),
   scope: (locale = 'en', args = {}) => format('scope', locale, args),

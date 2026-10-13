@@ -1,0 +1,36 @@
+---
+layout: ../layouts/Note.astro
+title: Words and components, together
+---
+
+export const generated = 'This sentence comes from an expression and stays read-only.';
+
+# Words and components, together
+
+This MDX page has a **tpyo** ready for a small correction.
+
+## Keep the structure
+
+Markdown emphasis and [helpfull links](https://mdxjs.com/) work alongside JSX.
+
+<div className="mdx-callout" title="Attributes stay in the source editor">
+  This is literal JSX child text with a <strong>mistakke</strong> to fix.
+</div>
+
+<p>{generated}</p>
+
+<div data-copyedit-ignore>This passage explicitly opts out of browser editing.</div>
+
+<pre><code>const message = "Keep code in the source editor";</code></pre>
+
+Inline `code` and fenced code also stay read-only:
+
+```js
+const label = "not editable";
+```
+
+| Where | What to try |
+| --- | --- |
+| A table cell | Correct this sentance. |
+
+The imports, exports, expressions, and attributes stay intact when you save.
